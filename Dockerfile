@@ -5,8 +5,8 @@ MAINTAINER from www.dwhd.org by lookback (mondeolove@gmail.com)
 
 # Java Version and other ENV
 ARG JAVA_VERSION_MAJOR=${JAVA_VERSION_MAJOR:-8}
-ARG JAVA_VERSION_MINOR=${JAVA_VERSION_MINOR:-121}
-ARG JAVA_VERSION_BUILD=${JAVA_VERSION_BUILD:-13}
+ARG JAVA_VERSION_MINOR=${JAVA_VERSION_MINOR:-131}
+ARG JAVA_VERSION_BUILD=${JAVA_VERSION_BUILD:-11}
 #ARG JAVA_JCE=${JAVA_JCE:-standard}
 ARG JAVA_JCE=${JAVA_JCE:-unlimited}
 
@@ -48,8 +48,8 @@ RUN set -ex && \
 		if [ "${JAVA_VERSION_MAJOR}" == 8 ]; then JCEPolicyJDKURL="http://download.oracle.com/otn-pub/java/jce/${JAVA_VERSION_MAJOR}/jce_policy-${JAVA_VERSION_MAJOR}.zip"; fi && \
 		curl -Lk -C - -b "oraclelicense=accept-securebackup-cookie" ${JCEPolicyJDKURL} >/tmp/jce_policy-${JAVA_VERSION_MAJOR}.zip && \
 		cd /tmp && unzip /tmp/jce_policy-${JAVA_VERSION_MAJOR}.zip && cd - && \
-		mv /tmp/UnlimitedJCE* /tmp/UnlimitedJCEPolicyJDK${JAVA_VERSION_MAJOR} && \
-		cp -v /tmp/UnlimitedJCEPolicyJDK${JAVA_VERSION_MAJOR}/*.jar /opt/jdk/jre/lib/security; \
+		mv /tmp/UnlimitedJCE* /tmp/UnlimitedJCEPolicyJDK && \
+		cp -v /tmp/UnlimitedJCEPolicyJDK/*.jar /opt/jdk/jre/lib/security; \
 	fi && \
 	sed -i s/#networkaddress.cache.ttl=-1/networkaddress.cache.ttl=10/ $JAVA_HOME/jre/lib/security/java.security && \
 	apk del curl glibc-i18n && \
