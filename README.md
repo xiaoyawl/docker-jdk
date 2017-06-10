@@ -47,4 +47,15 @@ Java HotSpot(TM) 64-Bit Server VM (build 25.131-b11, mixed mode)
 #### Run `javac`
 
     docker run -it --rm benyoo/jdk javac
+#### Build container
+
+```bash
+docker build -t benyoo/jdk github.com/xiaoyawl/docker-jdk
+```
+##### Build specify the version container
+```bash
+docker build -t benyoo/jdk:alpine.1.7.79.b15 --build-arg JAVA_VERSION_MAJOR=7 --build-arg JAVA_VERSION_MINOR=79 --build-arg JAVA_VERSION_BUILD=15 github.com/xiaoyawl/docker-jdk
+
+docker build -t benyoo/jdk:alpine.1.8.131.b11 --build-arg JAVA_VERSION_MAJOR=8 --build-arg JAVA_VERSION_MINOR=131 --build-arg JAVA_VERSION_BUILD=11 github.com/xiaoyawl/docker-jdk
+```
 
