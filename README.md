@@ -16,15 +16,15 @@ This repository contains **Dockerfile** of [Java](https://www.java.com/) for [Do
 * `latest` (default): OpenJDK Java 7 JDK (alias to `alpine.1.7.80.b15`)
 
 * `benyoo/jdk:alpine.1.7.80.b15`: Oracle Java 6 JDK 1.7.80.b15
-* `benyoo/jdk:alpine.1.8.131.b11`: Oracle Java 8 JDK 1.8.131.b11
+* `benyoo/jdk:alpine.1.8.221.b11`: Oracle Java 8 JDK 1.8.221.b11
 
 For example, you can run a `Oracle Java 8` container with the following command:
 
 ```bash
-[lookback@MacBook-Pro ~]$ docker run -it --rm benyoo/jdk:alpine.1.8.131.b11 java -version
-java version "1.8.0_131"
-Java(TM) SE Runtime Environment (build 1.8.0_131-b11)
-Java HotSpot(TM) 64-Bit Server VM (build 25.131-b11, mixed mode)
+[lookback@MacBook-Pro ~]$ docker run -it --rm benyoo/jdk:alpine.1.8.221.b11 java -version
+java version "1.8.0_221"
+Java(TM) SE Runtime Environment (build 1.8.0_221-b11)
+Java HotSpot(TM) 64-Bit Server VM (build 25.221-b11, mixed mode)
 ```
 
 ### Installation
@@ -56,6 +56,6 @@ docker build -t benyoo/jdk github.com/xiaoyawl/docker-jdk
 ```bash
 docker build -t benyoo/jdk:alpine.1.7.79.b15 --build-arg JAVA_VERSION_MAJOR=7 --build-arg JAVA_VERSION_MINOR=79 --build-arg JAVA_VERSION_BUILD=15 github.com/xiaoyawl/docker-jdk
 
-docker build -t benyoo/jdk:alpine.1.8.131.b11 --build-arg JAVA_VERSION_MAJOR=8 --build-arg JAVA_VERSION_MINOR=131 --build-arg JAVA_VERSION_BUILD=11 github.com/xiaoyawl/docker-jdk
+docker build -t benyoo/jdk:alpine.1.8.221.b11 --build-arg JAVA_VERSION_MAJOR=8 --build-arg JAVA_VERSION_MINOR=221 --build-arg JAVA_VERSION_BUILD=11 github.com/xiaoyawl/docker-jdk
 ```
 

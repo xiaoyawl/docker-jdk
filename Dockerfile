@@ -1,11 +1,11 @@
 # AlpineLinux with a glibc-2.25-r1 and Oracle Java
-FROM benyoo/alpine:3.5.20170325
+FROM benyoo/alpine:3.9.20190527
 MAINTAINER from www.dwhd.org by lookback (mondeolove@gmail.com)
 
 
 # Java Version and other ENV
 ARG JAVA_VERSION_MAJOR=${JAVA_VERSION_MAJOR:-8}
-ARG JAVA_VERSION_MINOR=${JAVA_VERSION_MINOR:-131}
+ARG JAVA_VERSION_MINOR=${JAVA_VERSION_MINOR:-221}
 ARG JAVA_VERSION_BUILD=${JAVA_VERSION_BUILD:-11}
 #ARG JAVA_JCE=${JAVA_JCE:-standard}
 ARG JAVA_JCE=${JAVA_JCE:-unlimited}
@@ -13,7 +13,7 @@ ARG JAVA_JCE=${JAVA_JCE:-unlimited}
 ENV JAVA_PACKAGE=jdk \
 	JAVA_HOME=/opt/jdk \
 	PATH=${PATH}:/opt/jdk/bin \
-	GLIBC_VERSION=2.25-r1 \
+	GLIBC_VERSION=2.29-r0 \
 	LANG=zh_CN.UTF-8
 #	LANG=C.UTF-8
 
