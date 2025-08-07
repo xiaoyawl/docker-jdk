@@ -1,61 +1,134 @@
-# Java SE Development Kit For Docker
+# 多版本JDK Docker镜像
 
+基于Ubuntu 24.04的精简JDK Docker镜像，支持JDK 19、20、21、22、23、24版本。
 
-This repository contains **Dockerfile** of [Java](https://www.java.com/) for [Docker](https://www.docker.com/)'s [automated build](https://hub.docker.com/r/benyoo/jdk/tags/) published to the public [Docker Hub Registry](https://registry.hub.docker.com/).
+## 支持的JDK版本
 
+- JDK 19 (LTS)
+- JDK 20 
+- JDK 21 (LTS)
+- JDK 22
+- JDK 23
+- JDK 24
 
-### Base Docker Image
+## 快速开始
 
-* [benyoo/alpine](https://hub.docker.com/r/benyoo/alpine/)
-
-
-### Docker Tags
-
-`benyoo/jdk` provides multiple tagged images:
-
-* `latest` (default): OpenJDK Java 7 JDK (alias to `alpine.1.7.80.b15`)
-
-* `benyoo/jdk:alpine.1.7.80.b15`: Oracle Java 6 JDK 1.7.80.b15
-* `benyoo/jdk:alpine.1.8.221.b11`: Oracle Java 8 JDK 1.8.221.b11
-
-For example, you can run a `Oracle Java 8` container with the following command:
+### 使用构建脚本（推荐）
 
 ```bash
-[lookback@MacBook-Pro ~]$ docker run -it --rm benyoo/jdk:alpine.1.8.221.b11 java -version
-java version "1.8.0_221"
-Java(TM) SE Runtime Environment (build 1.8.0_221-b11)
-Java HotSpot(TM) 64-Bit Server VM (build 25.221-b11, mixed mode)
+# 构建JDK 21（默认版本）
+./build.sh
+
+# 构建指定版本的JDK
+./build.sh 19.0.2
+./build.sh 20.0.2
+./build.sh 22.0.1
+./build.sh 23.0.1
+./build.sh 24.0.1
+
+# 指定自定义镜像标签
+./build.sh 21.0.7 mycompany/jdk
+
+# 批量构建所有版本
+./build-all.sh
+
+# 批量构建并指定镜像标签
+./build-all.sh mycompany/jdk
 ```
 
-### Installation
-
-1. Install [Docker](https://www.docker.com/).
-
-2. Download [automated build](https://hub.docker.com/r/benyoo/jdk/tags/) from public [Docker Hub Registry](https://registry.hub.docker.com/): `docker pull benyoo/jdk`
-
-   (alternatively, you can build an image from Dockerfile: `docker build -t="benyoo/jdk" github.com/xiaoyawl/docker-jdk`)
-
-
-### Usage
-
-    docker run -it --rm benyoo/jdk bash
-
-#### Run `java`
-
-    docker run -it --rm benyoo/jdk java
-
-#### Run `javac`
-
-    docker run -it --rm benyoo/jdk javac
-#### Build container
+### 直接使用Docker命令
 
 ```bash
-docker build -t benyoo/jdk github.com/xiaoyawl/docker-jdk
+# 构建JDK 21
+docker build --build-arg JDK_VERSION=21.0.7 -t benyoo/jdk:21.0.7-ubuntu24.04-20250807 .
+
+# 构建JDK 19
+docker build --build-arg JDK_VERSION=19.0.2 -t benyoo/jdk:19.0.2-ubuntu24.04-20250807 .
+
+# 构建JDK 24
+docker build --build-arg JDK_VERSION=24.0.1 -t benyoo/jdk:24.0.1-ubuntu24.04-20250807 .
 ```
-##### Build specify the version container
+
+## 使用方法
+
+### 运行容器
+
 ```bash
-docker build -t benyoo/jdk:alpine.1.7.79.b15 --build-arg JAVA_VERSION_MAJOR=7 --build-arg JAVA_VERSION_MINOR=79 --build-arg JAVA_VERSION_BUILD=15 github.com/xiaoyawl/docker-jdk
+# 运行JDK 21容器
+docker run --rm benyoo/jdk:21.0.7-ubuntu24.04-20250807 java -version
 
-docker build -t benyoo/jdk:alpine.1.8.221.b11 --build-arg JAVA_VERSION_MAJOR=8 --build-arg JAVA_VERSION_MINOR=221 --build-arg JAVA_VERSION_BUILD=11 github.com/xiaoyawl/docker-jdk
+# 运行JDK 19容器
+docker run --rm benyoo/jdk:19.0.2-ubuntu24.04-20250807 java -version
+
+# 进入容器交互模式
+docker run -it benyoo/jdk:21.0.7-ubuntu24.04-20250807 bash
 ```
 
+### 在Dockerfile中使用
+
+```dockerfile
+# 使用JDK 21
+FROM benyoo/jdk:21-ubuntu24.04-20250807
+COPY . /app
+WORKDIR /app
+CMD ["java", "-jar", "app.jar"]
+
+# 使用JDK 19
+FROM benyoo/jdk:19-ubuntu24.04-20250807
+COPY . /app
+WORKDIR /app
+CMD ["java", "-jar", "app.jar"]
+```
+
+## 镜像特性
+
+- **精简体积**: 基于Ubuntu 24.04精简镜像，移除不必要的文件
+- **多版本支持**: 支持JDK 19-24的所有版本
+- **快速构建**: 使用国内镜像源加速下载
+- **标准化**: 统一的JAVA_HOME和PATH配置
+
+## 环境变量
+
+- `JAVA_HOME`: `/opt/java`
+- `PATH`: 包含Java可执行文件路径
+
+## 构建参数
+
+- `JDK_VERSION`: JDK版本号（如：21.0.7、19.0.2等）
+
+## 示例
+
+### 构建所有支持的JDK版本
+
+```bash
+# 使用批量构建脚本（推荐）
+./build-all.sh
+
+# 或者手动构建
+#!/bin/bash
+versions=("19.0.2" "20.0.2" "21.0.7" "22.0.1" "23.0.1" "24.0.1")
+
+for version in "${versions[@]}"; do
+    echo "构建JDK $version..."
+    ./build.sh $version
+done
+```
+
+### 测试所有版本
+
+```bash
+#!/bin/bash
+versions=("19" "20" "21" "22" "23" "24")
+
+for version in "${versions[@]}"; do
+    echo "测试JDK $version..."
+    docker run --rm benyoo/jdk:$version-ubuntu24.04-20250807 java -version
+done
+```
+
+## 注意事项
+
+1. 确保构建脚本有执行权限：`chmod +x build.sh`
+2. 首次构建可能需要较长时间下载JDK安装包
+3. 建议使用国内镜像源以提高下载速度
+4. 镜像会自动清理临时文件以减小体积
