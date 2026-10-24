@@ -25,6 +25,14 @@ RUN set -eux; \
             curl \
             findutils \
             fontconfig \
+            freetype \
+            dejavu-sans-fonts \
+            google-noto-sans-cjk-ttc-fonts \
+            libX11 \
+            libXext \
+            libXi \
+            libXrender \
+            libXtst \
             gzip \
             tar \
             tzdata \
@@ -40,6 +48,14 @@ RUN set -eux; \
             curl \
             findutils \
             fontconfig \
+            freetype \
+            dejavu-sans-fonts \
+            google-noto-sans-cjk-ttc-fonts \
+            libX11 \
+            libXext \
+            libXi \
+            libXrender \
+            libXtst \
             gzip \
             tar \
             tzdata \
@@ -58,6 +74,14 @@ RUN set -eux; \
             curl \
             findutils \
             fontconfig \
+            libfreetype6 \
+            fonts-dejavu-core \
+            fonts-noto-cjk \
+            libx11-6 \
+            libxext6 \
+            libxi6 \
+            libxrender1 \
+            libxtst6 \
             gzip \
             tar \
             tzdata; \
@@ -71,6 +95,14 @@ RUN set -eux; \
             curl \
             findutils \
             fontconfig \
+            freetype \
+            font-dejavu \
+            font-noto-cjk \
+            libx11 \
+            libxext \
+            libxi \
+            libxrender \
+            libxtst \
             gcompat \
             gzip \
             libc6-compat \
@@ -81,7 +113,9 @@ RUN set -eux; \
     else \
         echo "ERROR: unsupported base image package manager" >&2; \
         exit 1; \
-    fi
+    fi; \
+    fc-cache -f; \
+    test -n "$(fc-list :lang=zh family)"
 
 ARG JAVA_VERSION=21
 ARG TARGETARCH
