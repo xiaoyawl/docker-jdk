@@ -1,0 +1,16 @@
+.git
+.agents
+.codex
+app
+config
+data
+logs
+*.log
+*.tar
+*.tar.gz
+*.zip
+*.rpm
+*.class
+target
+build
+out

@@ -1,0 +1,48 @@
+# Project-local agent and Codex state
+.agents/
+.codex/
+
+# macOS and editor files
+.DS_Store
+._*
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+*.p12
+*.jks
+*.keystore
+
+# Logs and runtime data
+logs/
+*.log
+*.pid
+
+# Build and package outputs
+build/
+dist/
+out/
+target/
+tmp/
+*.class
+*.jar
+*.war
+*.ear
+*.rpm
+*.tar
+*.tar.gz
+*.tgz
+*.zip
+
+# Local Docker compose bind mounts
+app/
+config/
+data/

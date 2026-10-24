@@ -1,0 +1,11 @@
+# 大版本|架构|标签版本|包内运行时版本|安装包地址|SHA-256（自有镜像站下载实测）
+8|x64|8u511|1.8.0_511-b32|https://mirrors.dtops.co/Java/Java%20SE%208/jdk-8u511-linux-x64.tar.gz|a3ed35a20959222ceccc88b5daede5d666b2b5b0f6ad68aba53c4b307d379319
+8|aarch64|8u511|1.8.0_511-b32|https://mirrors.dtops.co/Java/Java%20SE%208/jdk-8u511-linux-aarch64.tar.gz|1117146d21d3c0e4744347cbc9e1d4f848a8f702f265fd07033f5e9b9a0771f5
+11|x64|11.0.33.0.2|11.0.33.0.2+1-LTS-2|https://mirrors.dtops.co/Java/Java%20SE%2011/jdk-11.0.33.0.2_linux-x64_bin.tar.gz|66693f2ef80b18cd76816830f27d196252c01138858957ec71779714611dc150
+11|aarch64|11.0.33.0.2|11.0.33.0.2+1-LTS-2|https://mirrors.dtops.co/Java/Java%20SE%2011/jdk-11.0.33.0.2_linux-aarch64_bin.tar.gz|1bd5a792ed24487435ac36e4ce61112a7f882e08f73066a134f7822b1fbb487b
+17|x64|17.0.21.0.2|17.0.21.0.2+1-LTS-2|https://mirrors.dtops.co/Java/Java%20SE%2017/jdk-17.0.21.0.2_linux-x64_bin.tar.gz|afe38662ce5cf858cf10740bbc84bd7fa5a01fc0988b6e58e8a397286367e3e1
+17|aarch64|17.0.21.0.2|17.0.21.0.2+1-LTS-2|https://mirrors.dtops.co/Java/Java%20SE%2017/jdk-17.0.21.0.2_linux-aarch64_bin.tar.gz|450446b585f41994f52f198e410acb2a7f2a1d581571cef5c3d4bc4db0c55742
+21|x64|21.0.13.0.2|21.0.13.0.2+1-LTS-2|https://mirrors.dtops.co/Java/Java%20SE%2021/21.0.13/jdk-21.0.13.0.2_linux-x64_bin.tar.gz|f8b6d8ff52e225e5a328f68fd236b19b3fa58d996b6c9dbbd99a30c4adb38fdc
+21|aarch64|21.0.13.0.2|21.0.13.0.2+1-LTS-2|https://mirrors.dtops.co/Java/Java%20SE%2021/21.0.13/jdk-21.0.13.0.2_linux-aarch64_bin.tar.gz|30878d7894b4092ff6e88d3a96e784c66dd1f64ba53c81ea0e72858ed7cfb8bb
+25|x64|25.0.5.0.2|25.0.5.0.2+1-LTS-2|https://mirrors.dtops.co/Java/Java%20SE%2025/25.0.5/jdk-25_linux-x64_bin.tar.gz|d430d3f9e91435d2d58d366b1dabf14b23fcf8629ed4b041757c1be444055946
+25|aarch64|25.0.5.0.2|25.0.5.0.2+1-LTS-2|https://mirrors.dtops.co/Java/Java%20SE%2025/25.0.5/jdk-25_linux-aarch64_bin.tar.gz|070ae2ee07120a5b0dafac4d40f68eec356f2c1707fba940676f0b358ca269c2

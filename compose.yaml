@@ -1,0 +1,36 @@
+services:
+  java-app:
+    image: benyoo/jdk:21-rockylinux9
+    container_name: java-app
+    restart: unless-stopped
+    working_dir: /app
+    environment:
+      TIMEZONE: Asia/Shanghai
+      JAVA_TOOL_OPTIONS: "-XX:+UseContainerSupport -XX:MaxRAMPercentage=75"
+      JAVA_OPTS: "-Dfile.encoding=UTF-8 -Duser.timezone=Asia/Shanghai"
+      APP_JAR: /app/app.jar
+      APP_ARGS: "--spring.config.additional-location=/config/"
+      LOG_CLEANUP_CRON: "0 3 * * *"
+      LOG_CLEANUP_DIRS: "/logs"
+      LOG_CLEANUP_RETENTION_DAYS: "30"
+    volumes:
+      - ./app:/app
+      - ./config:/config:ro
+      - ./data:/data
+      - ./logs:/logs
+    ports:
+      - "8080:8080"
+
+  java-shell:
+    image: benyoo/jdk:21-rockylinux9
+    profiles:
+      - debug
+    working_dir: /app
+    command: ["bash"]
+    stdin_open: true
+    tty: true
+    volumes:
+      - ./app:/app
+      - ./config:/config:ro
+      - ./data:/data
+      - ./logs:/logs
