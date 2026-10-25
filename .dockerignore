@@ -1,6 +1,7 @@
 .git
 .agents
 .codex
+examples
 app
 config
 data

@@ -1,6 +1,8 @@
 # Project-local agent and Codex state
 .agents/
 .codex/
+# 业务部署配置仅保留在本地，禁止纳入项目仓库。
+/examples/
 
 # macOS and editor files
 .DS_Store
