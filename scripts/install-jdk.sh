@@ -204,6 +204,8 @@ printf '%s  %s\n' "$expected_sha256" "$jdk_archive" | sha256sum -c -
 rm -rf "$JAVA_HOME"
 mkdir -p "$JAVA_HOME"
 tar -xzf "$jdk_archive" -C "$JAVA_HOME" --strip-components=1
+# 官方安装包附带的源码压缩包不参与运行；同层删除，避免进入发布历史层。
+rm -f "$JAVA_HOME/src.zip" "$JAVA_HOME/javafx-src.zip" "$JAVA_HOME/lib/src.zip"
 
 actual_runtime="$(sed -n 's/^JAVA_RUNTIME_VERSION="\([^"]*\)"/\1/p' "$JAVA_HOME/release")"
 if [ "$actual_runtime" != "$expected_runtime" ]; then

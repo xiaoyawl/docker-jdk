@@ -1,10 +1,10 @@
 #!/bin/sh
 # 作者：Manta <manta.ops.dstw@gmail.com>
-# 仅为JDK8/Alpine提供旧业务JNI所需的OpenSSL ABI，不替换系统OpenSSL。
+# 为JDK8提供匹配目标系统的旧OpenSSL ABI，不替换系统OpenSSL。
 set -eu
 
 mkdir -p /compat-root
-if [ "${JAVA_VERSION}" != 8 ] || ! command -v apk >/dev/null 2>&1; then
+if [ "${JAVA_VERSION}" != 8 ]; then
     exit 0
 fi
 
@@ -12,7 +12,15 @@ version=1.0.0s
 archive="openssl-${version}.tar.gz"
 checksum=fb839f75b9b7195a0aaf307ca064b4358edb968a9524cbdf0a9e56d632f27a7b
 prefix="/opt/compat/openssl-${version}"
-apk add --no-cache build-base linux-headers perl curl ca-certificates
+if command -v apk >/dev/null 2>&1; then
+    apk add --no-cache build-base linux-headers perl curl ca-certificates
+elif command -v dnf >/dev/null 2>&1; then
+    dnf install -y gcc make perl-core diffutils curl ca-certificates tar gzip
+    dnf clean all
+else
+    printf '错误：当前系统尚未适配JDK8的OpenSSL兼容库构建\n' >&2
+    exit 1
+fi
 mkdir /tmp/openssl-build
 cd /tmp/openssl-build
 curl -fLsS --connect-timeout 20 --max-time 180 \
@@ -21,9 +29,11 @@ curl -fLsS --connect-timeout 20 --max-time 180 \
 printf '%s  %s\n' "$checksum" "$archive" | sha256sum -c -
 tar -xzf "$archive"
 cd "openssl-${version}"
-# musl提供POSIX termios接口，不提供旧System V termio接口。
-sed -i 's/-DTERMIO /-DTERMIOS /g' Configure
-sed -i 's/defined(linux) \&\& !defined(TERMIO)/defined(linux) \&\& !defined(TERMIO) \&\& !defined(TERMIOS)/' crypto/ui/ui_openssl.c
+if command -v apk >/dev/null 2>&1; then
+    # musl提供POSIX termios接口，不提供旧System V termio接口。
+    sed -i 's/-DTERMIO /-DTERMIOS /g' Configure
+    sed -i 's/defined(linux) \&\& !defined(TERMIO)/defined(linux) \&\& !defined(TERMIO) \&\& !defined(TERMIOS)/' crypto/ui/ui_openssl.c
+fi
 # generic64禁用汇编，分别使用目标架构工具链，不采用宿主CPU特性。
 perl ./Configure linux-generic64 shared no-asm -fcommon \
     --prefix="$prefix" --openssldir="$prefix/ssl"

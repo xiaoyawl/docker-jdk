@@ -16,6 +16,7 @@ ENV JAVA_HOME=/opt/java/oracle \
 SHELL ["/bin/sh", "-c"]
 
 COPY scripts/install-jdk.sh /usr/local/bin/install-jdk
+COPY scripts/cleanup-image.sh /usr/local/bin/cleanup-image
 COPY scripts/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 COPY scripts/log-cleaner.sh /usr/local/bin/log-cleaner
 COPY scripts/java-wrapper.sh /usr/local/bin/java
@@ -130,6 +131,8 @@ ARG TARGETARCH
 RUN set -eux; \
     chmod +x /usr/local/bin/install-jdk /usr/local/bin/docker-entrypoint.sh /usr/local/bin/log-cleaner /usr/local/bin/java; \
     JAVA_VERSION="${JAVA_VERSION}" TARGETARCH="${TARGETARCH}" install-jdk; \
+    sh /usr/local/bin/cleanup-image; \
+    rm -f /usr/local/bin/cleanup-image; \
     mkdir -p "${APP_HOME}" /config /data /logs; \
     java -version; \
     javac -version

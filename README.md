@@ -31,13 +31,13 @@ Dockerfile 会更新系统软件包，并按 [Oracle 2026-10-23 指引](https://
 
 本次 JDK 8、11、17、21、25 的三个系统变体均已发布，均包含 linux/amd64、linux/arm64。每个版本线均已从 Docker Hub 重新拉取并验证运行时及默认信任库。arm64 使用 QEMU 验证，实际 Tomcat 应用需单独验收。
 
-完整发布说明与 Tomcat 后续构建方法见 [Docker Hub 仓库概览](docs/DockerHub仓库概览-全版本安全维护-20261024200027-20261025192337.md)。
+完整发布说明与 Tomcat 后续构建方法见 [Docker Hub 仓库概览](docs/DockerHub仓库概览-全版本安全维护-20261024200027-20261026064833.md)。
 
-## JDK8 / Alpine 的旧本地库兼容
+## JDK8 三种系统的旧本地库兼容
 
-JDK8 / Alpine 构建额外提供 OpenSSL 1.0.0 ABI 兼容库，放置于 `/opt/compat/openssl-1.0.0s/lib`，并通过 `/usr/local/lib` 中的版本化链接供动态链接器发现。系统现有 OpenSSL 保持独立，镜像不包含业务 `libCryption.so`，该组件继续由业务 JAR 提供。
+JDK8 的 Alpine、CentOS Stream 9、Rocky Linux 9 构建额外提供 OpenSSL 1.0.0 ABI 兼容库，放置于 `/opt/compat/openssl-1.0.0s/lib`，并通过 `/usr/local/lib` 中的版本化链接供动态链接器发现。系统现有 OpenSSL 保持独立，镜像不包含业务 `libCryption.so`，该组件继续由业务 JAR 提供。
 
-源码来自 [OpenSSL 官方历史发布](https://mirror.openssl-library.org/source/old/1.0.0/index.html)，构建脚本固定完整地址和 SHA-256。该旧版本已结束支持，仅用于既有 JNI 兼容，不能视为安全升级，也不应供新应用使用。原始许可证随库保留。其他 JDK 版本和系统变体不安装这些兼容库。
+源码来自 [OpenSSL 官方历史发布](https://mirror.openssl-library.org/source/old/1.0.0/index.html)，构建脚本固定完整地址和 SHA-256。该旧版本已结束支持，仅用于既有 JNI 兼容，不能视为安全升级，也不应供新应用使用。原始许可证随库保留。CentOS Stream 9 与 Rocky Linux 9 分别在各自目标系统工具链中构建 glibc 兼容库；Alpine 构建 musl 兼容库。不同系统或架构的库不能互换。其他 JDK 主版本不安装这些兼容库。
 
 This product includes software developed by the OpenSSL Project for use in the OpenSSL Toolkit (http://www.openssl.org/). This product includes cryptographic software written by Eric Young (eay@cryptsoft.com).
 
@@ -49,7 +49,16 @@ export LD_LIBRARY_PATH="/opt/compat/openssl-1.0.0s/lib${LD_LIBRARY_PATH:+:$LD_LI
 
 `System.load(绝对路径)` 仍加载业务指定的顶层文件；上述设置用于查找其传递依赖。镜像的双架构能力不代表业务 JAR 内的本地组件也支持双架构。
 
-本次 JDK8 / Alpine 兼容库镜像已完成 amd64 原生、arm64 QEMU 运行验证，并沿用 `20261024` 标签重新发布；`latest` 与 `8u511-b32-alpine3.24-20261024` 均指向 `sha256:beb274782161887ff2ef328789b2245a24a83e7f123dd2553d872fcdd4b6d030`。旧版 OpenSSL 测试中，CMS 项的固定测试证书已于 2016 年过期，该项单独记录为未通过；其余测试及最终镜像加载、运行时、信任库和图形检查通过。
+本次 JDK8 / Alpine 兼容库镜像已完成 amd64 原生、arm64 QEMU 运行验证，并沿用 `20261024` 标签重新发布；`latest` 与 `8u511-b32-alpine3.24-20261024` 均指向 `sha256:39e53645b5602f6e52f63a796cc77275f7a621026b39632ac84e2679925e4720`。旧版 OpenSSL 测试中，CMS 项的固定测试证书已于 2016 年过期，该项单独记录为未通过；其余测试及最终镜像加载、运行时、信任库和图形检查通过。
+
+本次 CentOS Stream 9 与 Rocky Linux 9 的 amd64、arm64 产物均已完成候选及 Docker Hub 正式摘要重拉验证，沿用 `20261024` 标签及各自版本别名。通用 JNI 测试组件未设置 RPATH/RUNPATH，未预加载兼容库，仅按上述 `LD_LIBRARY_PATH` 解析两份旧 SONAME，并验证 SHA-256 运算和 SSL 上下文创建。系统 OpenSSL 3、curl 文件校验值与更新前一致，编译器、OpenSSL 源码、自测程序和下载缓存未进入最终文件层。
+
+| JDK8 系统 | 已发布的多架构摘要 |
+|---|---|
+| Rocky Linux 9 | `sha256:9608583e867932d0689f351361d6330dcb5546ecc18b828427c7968cc587f253` |
+| CentOS Stream 9 | `sha256:494d3c51c8ced1f91751225afea951099b146fc373436fa0f46301937dbb01ad` |
+
+本次未改动 Alpine 或 `latest`；业务 JAR 内的本地组件仍需与容器 CPU 架构匹配。
 
 ## 图形与字体支持
 
@@ -68,6 +77,12 @@ java -Djava.awt.headless=true -cp /tmp GraphicsSmoke --load-awt
 本次图形修复的 15 个多架构镜像、30 个平台组合均已完成构建及 Docker Hub 重拉验证，覆盖 JDK 8/11/17/21/25 与三种系统。amd64 原生执行，arm64 使用 QEMU。
 
 本次图形修复沿用 `20261024` 标签。拉取后必须重建容器才能使用新内容；需要固定可复现输入时，记录已验收的镜像 digest。
+
+## 镜像清理与层验收
+
+本次沿用 `20261024` 标签清理全部15个系统/版本组合（30个架构产物），删除 JDK 源码压缩包、安装脚本、临时文件和包管理下载缓存，并将最终发布文件系统重整为单个干净文件层，避免被删除的文件继续存在于下层。原 JDK、系统软件包和运行配置保持不变。
+
+每个架构均经过完整历史层及合并文件系统扫描，并验证 Java/Javac、HTTPS、默认信任库、字体、图片编解码和 AWT 依赖；JDK8 三种系统额外验证 OpenSSL 兼容库加载。amd64 原生运行，arm64 使用 QEMU。运行所需的字体缓存、软件包数据库、许可证与 JDK 工具保留。正式推送后重新拉取复核，全部64个标签与其对应的已验收摘要一致。日期标签不变，digest 已更新，使用者应重新拉取并重建容器。
 
 ## Capability Matrix
 
@@ -331,7 +346,7 @@ docker compose --profile debug run --rm java-shell
 
 - 禁止提交真实业务部署配置、内部节点或业务目录信息；`examples/` 已从版本控制和构建上下文排除，文档仅使用通用示例。
 - 文档命令默认在 root 环境执行，不加 `sudo`。
-- 构建时默认保留完整 JDK，不删除 `javac`、`jcmd`、`jmap`、`include` 或 `src.zip`。
+- 保留 `javac`、`jcmd`、`jmap`、`include` 等 JDK 工具与接口；删除不参与运行的 `src.zip`、`javafx-src.zip` 和 `lib/src.zip`，并清理安装临时文件及包管理下载缓存。字体缓存、包数据库和许可证按运行需要保留。
 - Alpine 镜像使用 Oracle JDK 的 glibc 二进制包，镜像内会安装 `gcompat`、`libc6-compat`、`libstdc++` 并设置 JDK 动态库路径。
 - `mirrors.dtops.co` 是本次安全重建的安装包来源；发现候选时匹配 Oracle JDK Linux tarball 文件名，实际安装只接受锁定清单中的包。
 - 如果多架构中某个 JDK 上游或镜像站缺少 arm64 包，构建会失败，不会静默降级为 amd64。
