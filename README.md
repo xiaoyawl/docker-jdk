@@ -31,7 +31,25 @@ Dockerfile 会更新系统软件包，并按 [Oracle 2026-10-23 指引](https://
 
 本次 JDK 8、11、17、21、25 的三个系统变体均已发布，均包含 linux/amd64、linux/arm64。每个版本线均已从 Docker Hub 重新拉取并验证运行时及默认信任库。arm64 使用 QEMU 验证，实际 Tomcat 应用需单独验收。
 
-完整发布说明与 Tomcat 后续构建方法见 [Docker Hub 仓库概览](docs/DockerHub仓库概览-全版本安全维护-20261024200027-20261025012541.md)。
+完整发布说明与 Tomcat 后续构建方法见 [Docker Hub 仓库概览](docs/DockerHub仓库概览-全版本安全维护-20261024200027-20261025192337.md)。
+
+## JDK8 / Alpine 的旧本地库兼容
+
+JDK8 / Alpine 构建额外提供 OpenSSL 1.0.0 ABI 兼容库，放置于 `/opt/compat/openssl-1.0.0s/lib`，并通过 `/usr/local/lib` 中的版本化链接供动态链接器发现。系统现有 OpenSSL 保持独立，镜像不包含业务 `libCryption.so`，该组件继续由业务 JAR 提供。
+
+源码来自 [OpenSSL 官方历史发布](https://mirror.openssl-library.org/source/old/1.0.0/index.html)，构建脚本固定完整地址和 SHA-256。该旧版本已结束支持，仅用于既有 JNI 兼容，不能视为安全升级，也不应供新应用使用。原始许可证随库保留。其他 JDK 版本和系统变体不安装这些兼容库。
+
+This product includes software developed by the OpenSSL Project for use in the OpenSSL Toolkit (http://www.openssl.org/). This product includes cryptographic software written by Eric Young (eay@cryptsoft.com).
+
+业务启动脚本可显式声明依赖目录，并保留镜像原有搜索路径：
+
+```bash
+export LD_LIBRARY_PATH="/opt/compat/openssl-1.0.0s/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+```
+
+`System.load(绝对路径)` 仍加载业务指定的顶层文件；上述设置用于查找其传递依赖。镜像的双架构能力不代表业务 JAR 内的本地组件也支持双架构。
+
+本次 JDK8 / Alpine 兼容库镜像已完成 amd64 原生、arm64 QEMU 运行验证，并沿用 `20261024` 标签重新发布；`latest` 与 `8u511-b32-alpine3.24-20261024` 均指向 `sha256:beb274782161887ff2ef328789b2245a24a83e7f123dd2553d872fcdd4b6d030`。旧版 OpenSSL 测试中，CMS 项的固定测试证书已于 2016 年过期，该项单独记录为未通过；其余测试及最终镜像加载、运行时、信任库和图形检查通过。
 
 ## 图形与字体支持
 
@@ -247,7 +265,7 @@ docker run -d \
 ```yaml
 environment:
   LOG_CLEANUP_CRON: "0 3 * * *"
-  LOG_CLEANUP_DIRS: "/data/payment/logs"
+  LOG_CLEANUP_DIRS: "/data/java-app/logs"
   LOG_CLEANUP_RETENTION_DAYS: "30"
 ```
 
@@ -258,7 +276,7 @@ environment:
   LOG_CLEANUP_CRON: |
     0 3 * * *
     30 15 * * 0
-  LOG_CLEANUP_DIRS: "/data/payment/logs"
+  LOG_CLEANUP_DIRS: "/data/java-app/logs"
   LOG_CLEANUP_RETENTION_DAYS: "30"
 ```
 
@@ -276,7 +294,7 @@ environment:
 ```yaml
 environment:
   LOG_CLEANUP_CRON: "0 3 * * *"
-  LOG_CLEANUP_DIRS: "/data/payment/logs"
+  LOG_CLEANUP_DIRS: "/data/java-app/logs"
   LOG_CLEANUP_RETENTION_DAYS: "30"
   LOG_CLEANUP_DRY_RUN: "true"
 ```
@@ -297,7 +315,7 @@ java.lang.UnsupportedClassVersionError: ... has been compiled by a more recent v
 
 ```yaml
 services:
-  payment:
+  java-app:
     image: benyoo/jdk:17-rockylinux9
 ```
 
@@ -311,6 +329,7 @@ docker compose --profile debug run --rm java-shell
 
 ## Notes
 
+- 禁止提交真实业务部署配置、内部节点或业务目录信息；`examples/` 已从版本控制和构建上下文排除，文档仅使用通用示例。
 - 文档命令默认在 root 环境执行，不加 `sudo`。
 - 构建时默认保留完整 JDK，不删除 `javac`、`jcmd`、`jmap`、`include` 或 `src.zip`。
 - Alpine 镜像使用 Oracle JDK 的 glibc 二进制包，镜像内会安装 `gcompat`、`libc6-compat`、`libstdc++` 并设置 JDK 动态库路径。

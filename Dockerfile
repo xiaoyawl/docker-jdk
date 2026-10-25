@@ -1,4 +1,10 @@
 ARG BASE_IMAGE=benyoo/rockylinux:9-20260615
+FROM ${BASE_IMAGE} AS openssl-compat
+
+ARG JAVA_VERSION=21
+COPY scripts/build-openssl-compat.sh /tmp/build-openssl-compat.sh
+RUN sh /tmp/build-openssl-compat.sh
+
 FROM ${BASE_IMAGE}
 
 ENV JAVA_HOME=/opt/java/oracle \
@@ -14,6 +20,7 @@ COPY scripts/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 COPY scripts/log-cleaner.sh /usr/local/bin/log-cleaner
 COPY scripts/java-wrapper.sh /usr/local/bin/java
 COPY jdk-packages.lock /usr/local/share/jdk-packages.lock
+COPY --from=openssl-compat /compat-root/ /
 
 RUN set -eux; \
     if command -v dnf >/dev/null 2>&1; then \
